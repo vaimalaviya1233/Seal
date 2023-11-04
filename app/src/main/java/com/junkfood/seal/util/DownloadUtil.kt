@@ -61,7 +61,6 @@ object DownloadUtil {
 
     private const val TAG = "DownloadUtil"
 
-
     const val BASENAME = "%(title).200B"
 
     const val EXTENSION = ".%(ext)s"
