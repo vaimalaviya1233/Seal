@@ -32,6 +32,7 @@ object Route {
 
     const val TASK_HASHCODE = "task_hashcode"
     const val TEMPLATE_ID = "template_id"
+    const val DEBUG = "debug"
 }
 
 infix fun String.arg(arg: String) = "$this/{$arg}"

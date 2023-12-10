@@ -127,12 +127,9 @@ android {
                 val name =
                     output.filters.find { it.filterType == FilterConfiguration.FilterType.ABI }?.identifier
 
-                val baseAbiCode = abiCodes[name]?:2
+                val baseAbiCode = abiCodes[name] ?: 2
 
-                if (baseAbiCode != null) {
-
-                    output.versionCode.set(baseAbiCode + (output.versionCode.get() ?: 0))
-                }
+                output.versionCode.set(baseAbiCode + (output.versionCode.get() ?: 0))
 
             }
         }

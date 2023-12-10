@@ -110,9 +110,9 @@ fun SingleChoiceChip(
     modifier: Modifier = Modifier,
     selected: Boolean,
     enabled: Boolean = true,
-    onClick: () -> Unit,
     label: String,
-    leadingIcon: ImageVector = Icons.Outlined.Check
+    leadingIcon: ImageVector = Icons.Outlined.Check,
+    onClick: () -> Unit,
 ) {
     FilterChip(
         modifier = modifier.padding(horizontal = 4.dp),
@@ -144,9 +144,10 @@ fun VideoFilterChip(
     modifier: Modifier = Modifier,
     selected: Boolean,
     enabled: Boolean = true,
+    label: String,
     onClick: () -> Unit,
-    label: String
-) {
+
+    ) {
     FilterChip(
         modifier = modifier.padding(horizontal = 4.dp),
         selected = selected, enabled = enabled,
