@@ -33,7 +33,7 @@ fun AsyncImageImpl(
     isPreview: Boolean = LocalInspectionMode.current
 ) {
     if (isPreview) Image(
-        painter = painterResource(model.let { if (it is Int) it else R.drawable.sample }),
+        painter = painterResource(model.let { if (it is Int) it else R.drawable.sample2 }),
         contentDescription = contentDescription,
         modifier = modifier,
         alignment = alignment,

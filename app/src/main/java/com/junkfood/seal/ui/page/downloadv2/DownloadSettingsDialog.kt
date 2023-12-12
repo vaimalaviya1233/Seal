@@ -1,10 +1,10 @@
 package com.junkfood.seal.ui.page.downloadv2
 
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.horizontalScroll
@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -27,6 +25,7 @@ import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -59,8 +58,7 @@ import com.junkfood.seal.ui.component.PasteButton
 import com.junkfood.seal.ui.component.SealModalBottomSheet
 import com.junkfood.seal.ui.component.SingleChoiceChip
 import com.junkfood.seal.ui.component.VideoFilterChip
-import com.junkfood.seal.ui.page.download.FormatPageContentPreview
-import com.junkfood.seal.ui.page.download.FormatPagePreview
+import com.junkfood.seal.ui.page.download.PlaylistSelectionPagePreview
 import com.junkfood.seal.ui.theme.SealTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -71,16 +69,25 @@ private const val TAG = "DownloadSettingsDialog"
 @Composable
 fun DownloadSettingsDialog(sheetState: SheetState, onDismissRequest: () -> Unit) {
 //    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var showFormatSelection by remember {
+
+    var isFetchingInfo by remember {
         mutableStateOf(false)
     }
 
-    BackHandler(enabled = showFormatSelection) {
-        showFormatSelection = false
+    var showPlaylistPage by remember {
+        mutableStateOf(false)
     }
+
     val dragHandle: @Composable() (() -> Unit) = {
-        if (!showFormatSelection) BottomSheetDefaults.DragHandle()
+        Column {
+            AnimatedVisibility(visible = !showPlaylistPage) {
+                BottomSheetDefaults.DragHandle()
+            }
+        }
     }
+
+    val scope = rememberCoroutineScope()
+
     val windowInsets = WindowInsets(0)
     SealModalBottomSheet(
         modifier = Modifier,
@@ -90,17 +97,9 @@ fun DownloadSettingsDialog(sheetState: SheetState, onDismissRequest: () -> Unit)
         dragHandle = dragHandle,
     ) {
 
-        Log.d(
-            TAG,
-            "DownloadSettingsDialog: ${BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top)}"
-        )
-        Log.d(
-            TAG,
-            "DownloadSettingsDialog: ${windowInsets}"
-        )
-
-        AnimatedContent(targetState = showFormatSelection, label = "", transitionSpec = {
-            slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Up)
+        AnimatedContent(targetState = showPlaylistPage, label = "", transitionSpec = {
+            (fadeIn(tween(90, delayMillis = 90)) +
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Up))
                 .togetherWith(fadeOut(animationSpec = tween(90)))
         }) {
             if (!it) {
@@ -179,6 +178,8 @@ fun DownloadSettingsDialog(sheetState: SheetState, onDismissRequest: () -> Unit)
                                         customCommand = true
                                     }
                                 }*/
+
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -199,6 +200,7 @@ fun DownloadSettingsDialog(sheetState: SheetState, onDismissRequest: () -> Unit)
                         SingleChoiceChip(label = "Command", selected = customCommand) {}
 
                     }
+
                     DrawerSheetSubtitle(text = stringResource(id = R.string.additional_settings))
                     Row(
                         modifier = Modifier
@@ -209,6 +211,7 @@ fun DownloadSettingsDialog(sheetState: SheetState, onDismissRequest: () -> Unit)
                             VideoFilterChip(selected = false, label = "Setting $it") {}
                         }
                     }
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -216,7 +219,8 @@ fun DownloadSettingsDialog(sheetState: SheetState, onDismissRequest: () -> Unit)
                         horizontalArrangement = Arrangement.End
                     ) {
                         OutlinedButton(
-                            onClick = { /*TODO*/ },
+                            onClick = {
+                            },
                             contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                             modifier = Modifier.padding(end = 12.dp)
                         ) {
@@ -230,24 +234,54 @@ fun DownloadSettingsDialog(sheetState: SheetState, onDismissRequest: () -> Unit)
                             Text(text = stringResource(id = R.string.cancel))
                         }
                         Button(
-                            onClick = { showFormatSelection = true },
+                            onClick = {
+                                scope.launch {
+                                    isFetchingInfo = true
+                                    delay(2000)
+                                    isFetchingInfo = false
+                                    showPlaylistPage = true
+                                }
+                            },
                             contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                             modifier = Modifier,
-//                    enabled = false
                         ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = ButtonDefaults.IconSpacing)
-                                    .size(ButtonDefaults.IconSize)
-                            )
-                            Text(text = "Continue")
+                            AnimatedContent(targetState = isFetchingInfo) { isFetchingInfo ->
+                                if (!isFetchingInfo) {
+                                    Row {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .padding(end = ButtonDefaults.IconSpacing)
+                                                .size(ButtonDefaults.IconSize)
+                                        )
+                                        Text(text = "Continue")
+                                    }
+
+                                } else {
+                                    Row {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier
+                                                .padding(end = ButtonDefaults.IconSpacing)
+                                                .size(ButtonDefaults.IconSize)
+                                                .padding(1.dp),
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            strokeWidth = 2.dp
+                                        )
+                                        Text(text = stringResource(id = R.string.status_fetching_video_info))
+                                    }
+
+                                }
+                            }
+
                         }
                     }
                 }
             } else {
-                FormatPagePreview()
+                PlaylistSelectionPagePreview() {
+                    if (showPlaylistPage)
+                        showPlaylistPage = false
+                }
             }
 
         }
@@ -257,7 +291,7 @@ fun DownloadSettingsDialog(sheetState: SheetState, onDismissRequest: () -> Unit)
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun DialogPreview() {
+fun HomepagePreview() {
     var showSheet by remember {
         mutableStateOf(true)
     }

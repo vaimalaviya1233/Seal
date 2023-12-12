@@ -47,7 +47,7 @@ import com.junkfood.seal.ui.page.download.DownloadPage
 import com.junkfood.seal.ui.page.download.DownloadViewModel
 import com.junkfood.seal.ui.page.download.FormatPage
 import com.junkfood.seal.ui.page.download.PlaylistSelectionPage
-import com.junkfood.seal.ui.page.downloadv2.DialogPreview
+import com.junkfood.seal.ui.page.downloadv2.HomepagePreview
 import com.junkfood.seal.ui.page.settings.SettingsPage
 import com.junkfood.seal.ui.page.settings.about.AboutPage
 import com.junkfood.seal.ui.page.settings.about.CreditsPage
@@ -152,7 +152,7 @@ fun HomeEntry(
             startDestination = Route.DEBUG
         ) {
             animatedComposable(Route.DEBUG) {
-                DialogPreview()
+                HomepagePreview()
             }
             animatedComposable(Route.HOME) {
                 DownloadPage(
