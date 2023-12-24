@@ -149,6 +149,8 @@ fun FormatPagePreview() {
     }
     val videoInfo =
         VideoInfo(
+            title = stringResource(id = R.string.video_title_sample_text),
+            uploader = stringResource(id = R.string.video_creator_sample_text),
             formats = buildList {
                 repeat(7) {
                     add(Format(formatId = "$it"))
@@ -833,7 +835,9 @@ fun FormatPageContentImpl(
             scrollBehavior = scrollBehavior)
 
         LazyVerticalGrid(
-            modifier = Modifier.padding().nestedScroll(scrollBehavior.nestedScrollConnection),
+            modifier = Modifier
+                .padding()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             columns = GridCells.Adaptive(150.dp),
